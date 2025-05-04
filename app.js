@@ -40,4 +40,26 @@ app.use(function(err, req, res, next) {
   res.render('error');
 });
 
+let latestCoordinates = { lat: null, lon: null };
+
+// Handle POST to store the latest coordinates
+app.post('/api/location', (req, res) => {
+  const { lat, lon } = req.body;
+  if (typeof lat === 'number' && typeof lon === 'number') {
+    latestCoordinates = { lat, lon };
+    console.log(`Received: lat=${lat}, lon=${lon}`);
+    res.status(200).json({ message: 'Coordinates received.' });
+  } else {
+    res.status(400).json({ error: 'Invalid coordinates.' });
+  }
+});
+
+// Handle GET to display the latest coordinates
+app.get('/api/location', (req, res) => {
+  res.json(latestCoordinates);
+});
+
+app.listen(port, () => {
+  console.log(`Server running at http://localhost:${port}`);
+});
 module.exports = app;
