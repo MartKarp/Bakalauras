@@ -59,7 +59,4 @@ app.get('/api/location', (req, res) => {
   res.json(latestCoordinates);
 });
 
-app.listen(port, () => {
-  console.log(`Server running at http://localhost:${port}`);
-});
 module.exports = app;
