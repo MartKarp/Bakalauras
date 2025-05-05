@@ -1,8 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const Location = require('../models/Location'); // adjust path if needed
+const Lock = require('../models/Lock'); // adjust path as needed
 
-let lockState = 'unlocked';
+
 
 router.post('/location', async (req, res) => {
   const { lat, lon } = req.body;
@@ -37,9 +38,9 @@ router.get('/location', async (req, res) => {
 // GET current lock state
 router.get('/lock', async (req, res) => {
   try {
-    let doc = await LockState.findById('current');
+    let doc = await Lock.findById('current');
     if (!doc) {
-      doc = await LockState.create({ _id: 'current', state: 'unlocked' });
+      doc = await Lock.create({ _id: 'current', state: 'unlocked' });
     }
     res.json({ status: doc.state });
   } catch (err) {
@@ -49,13 +50,13 @@ router.get('/lock', async (req, res) => {
 
 // POST to lock
 router.post('/lock', async (req, res) => {
-  await LockState.findByIdAndUpdate('current', { state: 'locked', updatedAt: new Date() }, { upsert: true });
+  await Lock.findByIdAndUpdate('current', { state: 'locked', updatedAt: new Date() }, { upsert: true });
   res.json({ status: 'locked' });
 });
 
 // POST to unlock
 router.post('/unlock', async (req, res) => {
-  await LockState.findByIdAndUpdate('current', { state: 'unlocked', updatedAt: new Date() }, { upsert: true });
+  await Lock.findByIdAndUpdate('current', { state: 'unlocked', updatedAt: new Date() }, { upsert: true });
   res.json({ status: 'unlocked' });
 });
 
