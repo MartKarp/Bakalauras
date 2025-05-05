@@ -3,6 +3,7 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
+var mongoose = require('mongoose');
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
@@ -28,6 +29,12 @@ app.use('/api', apiRouter);
 app.use(function(req, res, next) {
   next(createError(404));
 });
+
+mongoose.connect('mongodb://localhost:27017/gpsdb', {
+  useNewUrlParser: true,
+  useUnifiedTopology: true
+}).then(() => console.log('MongoDB connected'))
+  .catch(err => console.error('MongoDB connection error:', err));
 
 // error handler
 app.use(function(err, req, res, next) {
