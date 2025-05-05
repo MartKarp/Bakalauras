@@ -36,6 +36,16 @@ mongoose.connect('mongodb://localhost:27017/gpsdb', {
 }).then(() => console.log('MongoDB connected'))
   .catch(err => console.error('MongoDB connection error:', err));
 
+  mongoose.connect('mongodb://localhost:27017/bike_lock', {
+    useNewUrlParser: true,
+    useUnifiedTopology: true
+  }).then(() => {
+    console.log("MongoDB connected");
+  }).catch(err => {
+    console.error("MongoDB connection error:", err.message);
+  });
+  
+
 // error handler
 app.use(function(err, req, res, next) {
   // set locals, only providing error in development
