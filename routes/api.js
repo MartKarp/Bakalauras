@@ -2,12 +2,14 @@ const express = require('express');
 const router = express.Router();
 const Location = require('../models/Location'); // adjust path if needed
 
+let lockState = 'unlocked';
+
 router.post('/location', async (req, res) => {
   const { lat, lon } = req.body;
 
   if (typeof lat === 'number' && typeof lon === 'number') {
     try {
-      const newLocation = new Location({ lat, lon }); // ✅ "new" keyword is critical
+      const newLocation = new Location({ lat, lon });
       await newLocation.save();
       res.status(200).json({ message: 'Location saved', data: newLocation });
     } catch (err) {
@@ -30,6 +32,22 @@ router.get('/location', async (req, res) => {
   } catch (err) {
     res.status(500).json({ error: 'Database error', details: err.message });
   }
+});
+
+router.post('/lock', (req, res) => {
+  lockState = 'locked';
+  console.log("Bike locked.");
+  res.json({ status: 'locked' });
+});
+
+router.post('/unlock', (req, res) => {
+  lockState = 'unlocked';
+  console.log("Bike unlocked.");
+  res.json({ status: 'unlocked' });
+});
+
+router.get('/lock', (req, res) => {
+  res.json({ status: lockState });
 });
 
 module.exports = router;
