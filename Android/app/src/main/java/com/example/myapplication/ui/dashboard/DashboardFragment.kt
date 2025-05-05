@@ -1,6 +1,7 @@
 package com.example.myapplication.ui.dashboard
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -44,8 +45,11 @@ class DashboardFragment : Fragment() {
     private fun sendCommandToServer(endpoint: String) {
         CoroutineScope(Dispatchers.IO).launch {
             try {
+                val url = serverUrl + endpoint
+                Log.d("BikeLock", "Sending POST to $url")
+
                 val request = Request.Builder()
-                    .url(serverUrl + endpoint)
+                    .url(url)
                     .post("".toRequestBody("application/json".toMediaType()))
                     .build()
 
@@ -53,16 +57,20 @@ class DashboardFragment : Fragment() {
 
                 CoroutineScope(Dispatchers.Main).launch {
                     if (response.isSuccessful) {
+                        Log.d("BikeLock", "Server response: ${response.code}")
                         Toast.makeText(context, "Command sent: ${endpoint.substringAfterLast("/")}", Toast.LENGTH_SHORT).show()
                     } else {
-                        Toast.makeText(context, "Failed to send command", Toast.LENGTH_SHORT).show()
+                        Log.e("BikeLock", "Failed with code: ${response.code}")
+                        Toast.makeText(context, "Server error: ${response.code}", Toast.LENGTH_SHORT).show()
                     }
                 }
             } catch (e: Exception) {
+                Log.e("BikeLock", "Request failed: ${e.message}")
                 CoroutineScope(Dispatchers.Main).launch {
-                    Toast.makeText(context, "Error: ${e.message}", Toast.LENGTH_LONG).show()
+                    Toast.makeText(context, "Network error: ${e.message}", Toast.LENGTH_LONG).show()
                 }
             }
         }
     }
+
 }

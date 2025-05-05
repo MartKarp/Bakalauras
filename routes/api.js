@@ -34,20 +34,29 @@ router.get('/location', async (req, res) => {
   }
 });
 
-router.post('/lock', (req, res) => {
-  lockState = 'locked';
-  console.log("Bike locked.");
+// GET current lock state
+router.get('/lock', async (req, res) => {
+  try {
+    let doc = await LockState.findById('current');
+    if (!doc) {
+      doc = await LockState.create({ _id: 'current', state: 'unlocked' });
+    }
+    res.json({ status: doc.state });
+  } catch (err) {
+    res.status(500).json({ error: 'Database error', details: err.message });
+  }
+});
+
+// POST to lock
+router.post('/lock', async (req, res) => {
+  await LockState.findByIdAndUpdate('current', { state: 'locked', updatedAt: new Date() }, { upsert: true });
   res.json({ status: 'locked' });
 });
 
-router.post('/unlock', (req, res) => {
-  lockState = 'unlocked';
-  console.log("Bike unlocked.");
+// POST to unlock
+router.post('/unlock', async (req, res) => {
+  await LockState.findByIdAndUpdate('current', { state: 'unlocked', updatedAt: new Date() }, { upsert: true });
   res.json({ status: 'unlocked' });
-});
-
-router.get('/lock', (req, res) => {
-  res.json({ status: lockState });
 });
 
 module.exports = router;
