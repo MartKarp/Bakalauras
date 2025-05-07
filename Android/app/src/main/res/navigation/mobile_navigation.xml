@@ -22,4 +22,10 @@
         android:name="com.example.myapplication.ui.notifications.NotificationsFragment"
         android:label="@string/title_notifications"
         tools:layout="@layout/fragment_notifications" />
+    <fragment
+        android:id="@+id/navigation_claim"
+        android:name="com.example.myapplication.ui.claim.AddDeviceFragment"
+        android:label="Pridėti įrenginį"
+        tools:layout="@layout/fragment_add_device" />
+
 </navigation>
