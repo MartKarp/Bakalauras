@@ -69,7 +69,8 @@ class MainActivity : AppCompatActivity() {
                 R.id.navigation_home,
                 R.id.navigation_dashboard,
                 R.id.navigation_notifications,
-                R.id.navigation_claim // 👈 we'll define this next
+                R.id.navigation_claim ,
+                R.id.navigation_profile// 👈 we'll define this next
             )
         )
 
