@@ -183,6 +183,36 @@ router.post('/unclaim', authenticateToken, async (req, res) => {
   }
 });
 
+router.post('/device_register', async (req, res) => {
+  const { deviceId, claimCode, deviceSecret } = req.body;
+
+  if (!deviceId || !claimCode || !deviceSecret) {
+    return res.status(400).json({ error: "Missing required fields" });
+  }
+
+  // Optional: Check if device already exists
+  const existing = await Device.findOne({ deviceId });
+  if (existing) {
+    return res.status(409).json({ error: "Device already exists" });
+  }
+
+  try {
+    const newDevice = new Device({
+      deviceId,
+      claimCode,
+      deviceSecret,
+      claimed: false,
+      owner: null
+    });
+
+    await newDevice.save();
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ error: "Database error", details: err.message });
+  }
+});
+
+
 
 
 module.exports = router;

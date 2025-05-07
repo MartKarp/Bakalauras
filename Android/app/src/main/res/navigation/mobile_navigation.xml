@@ -27,6 +27,12 @@
         android:name="com.example.myapplication.ui.claim.AddDeviceFragment"
         android:label="Pridėti Įrenginį"
         tools:layout="@layout/fragment_add_device" />
+    <fragment
+        android:id="@+id/navigation_profile"
+        android:name="com.example.myapplication.ui.profile.ProfileFragment"
+        android:label="Profilis"
+        tools:layout="@layout/fragment_profile" />
+
 
 
 </navigation>
