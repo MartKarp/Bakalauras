@@ -118,7 +118,7 @@ router.post('/register', async (req, res) => {
 });
 
 router.get('/test', (req, res) => {
-  res.json({ message: 'API test OK' });
+  res.json({ message: 'API test OK!' });
 });
 
 
@@ -154,6 +154,35 @@ router.get('/me', authenticateToken, async (req, res) => {
     res.status(500).json({ error: 'Database error', details: err.message });
   }
 });
+
+router.post('/unclaim', authenticateToken, async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id);
+    if (!user || user.devices.length === 0) {
+      return res.status(400).json({ error: 'No device to unclaim' });
+    }
+
+    const deviceId = user.devices[0]; // assume 1 device for now
+    const device = await Device.findOne({ deviceId });
+
+    if (!device) {
+      return res.status(404).json({ error: 'Device not found' });
+    }
+
+    device.claimed = false;
+    device.owner = null;
+    await device.save();
+
+    user.devices = [];
+    await user.save();
+
+    res.json({ success: true, message: 'Device unclaimed' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Unclaim failed', details: err.message });
+  }
+});
+
 
 
 module.exports = router;
