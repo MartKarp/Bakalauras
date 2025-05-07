@@ -16,8 +16,10 @@ import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
+import android.widget.TextView
 
 class DashboardFragment : Fragment() {
+
 
     private val client = OkHttpClient()
     private val serverUrl = "http://194.31.55.182:3001"
@@ -26,7 +28,11 @@ class DashboardFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+
+
         val view = inflater.inflate(R.layout.fragment_dashboard, container, false)
+
+
 
         val lockButton = view.findViewById<Button>(R.id.lockButton)
         val unlockButton = view.findViewById<Button>(R.id.unlockButton)

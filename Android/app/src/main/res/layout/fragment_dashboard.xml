@@ -1,27 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/dashboard_fragment"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="32dp"
-    android:gravity="center">
+    android:background="@color/background_gray"
+    android:gravity="center_horizontal"
+    android:padding="24dp">
 
+    <!-- 🌟 Proper Header View -->
+       <!-- 🔒 Lock Button -->
     <Button
         android:id="@+id/lockButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="LOCK"
-        android:backgroundTint="@android:color/holo_red_dark"
-        android:textColor="@android:color/white"
-        android:layout_marginBottom="24dp"/>
+        android:layout_width="250dp"
+        android:layout_height="60dp"
+        android:text="🔒 Užrakinti"
+        android:fontFamily="@font/poppins_bold"
+        android:textSize="18sp"
+        android:textColor="@color/text_light"
+        android:background="@drawable/rounded_button"
+        android:layout_marginTop="24dp"
+        android:layout_marginBottom="20dp" />
 
+    <!-- 🔓 Unlock Button -->
     <Button
         android:id="@+id/unlockButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="UNLOCK"
-        android:backgroundTint="@android:color/holo_green_dark"
-        android:textColor="@android:color/white"/>
+        android:layout_width="250dp"
+        android:layout_height="60dp"
+        android:text="🔓 Atrakinti"
+        android:fontFamily="@font/poppins_bold"
+        android:textSize="18sp"
+        android:textColor="@color/text_light"
+        android:background="@drawable/rounded_button" />
 </LinearLayout>

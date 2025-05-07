@@ -2,6 +2,24 @@ const express = require('express');
 const router = express.Router();
 const Location = require('../models/Location'); // adjust path if needed
 const Lock = require('../models/Lock'); // adjust path as needed
+const Device = require('../models/Device');
+const User = require('../models/User');
+const jwt = require('jsonwebtoken');
+
+require('dotenv').config();
+const jwtSecret = process.env.JWT_SECRET;
+
+
+function authenticateToken(req, res, next) {
+  const token = req.headers['authorization'];
+  if (!token) return res.sendStatus(401);
+
+  jwt.verify(token, jwtSecret, (err, user) => {
+    if (err) return res.sendStatus(403);
+    req.user = user;
+    next();
+  });
+}
 
 
 
@@ -58,6 +76,23 @@ router.post('/lock', async (req, res) => {
 router.post('/unlock', async (req, res) => {
   await Lock.findByIdAndUpdate('current', { state: 'unlocked', updatedAt: new Date() }, { upsert: true });
   res.json({ status: 'unlocked' });
+});
+
+// Claim a device
+router.post('/claim', authenticateToken, async (req, res) => {
+  const { claimCode } = req.body;
+
+  const device = await Device.findOne({ claimCode });
+  if (!device) return res.status(404).json({ error: 'Invalid claim code' });
+  if (device.claimed) return res.status(400).json({ error: 'Device already claimed' });
+
+  device.claimed = true;
+  device.owner = req.user.id;
+  await device.save();
+
+  await User.findByIdAndUpdate(req.user.id, { $push: { devices: device.deviceId } });
+
+  res.json({ success: true, deviceId: device.deviceId });
 });
 
 module.exports = router;
