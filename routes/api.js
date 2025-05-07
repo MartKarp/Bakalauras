@@ -141,6 +141,19 @@ router.post('/login', async (req, res) => {
   }
 });
 
+router.get('/me', authenticateToken, async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id).populate('devices');
+    if (!user) return res.status(404).json({ error: 'User not found' });
+
+    res.json({
+      email: user.email,
+      devices: user.devices,
+    });
+  } catch (err) {
+    res.status(500).json({ error: 'Database error', details: err.message });
+  }
+});
 
 
 module.exports = router;
