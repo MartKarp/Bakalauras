@@ -30,12 +30,6 @@ app.use(function(req, res, next) {
   next(createError(404));
 });
 
-mongoose.connect('mongodb://localhost:27017/gpsdb', {
-  useNewUrlParser: true,
-  useUnifiedTopology: true
-}).then(() => console.log('MongoDB connected'))
-  .catch(err => console.error('MongoDB connection error:', err));
-
   mongoose.connect('mongodb://localhost:27017/bike_lock', {
     useNewUrlParser: true,
     useUnifiedTopology: true
