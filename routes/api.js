@@ -8,6 +8,7 @@ const Alert = require('../models/Alert');
 
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
+const moment = require('moment-timezone');
 
 
 require('dotenv').config();
@@ -246,19 +247,19 @@ router.post('/motion-alert', async (req, res) => {
 });
 
 router.get('/alerts', authenticateToken, async (req, res) => {
-  const user = await User.findById(req.user.id);
-  if (!user || !user.devices || user.devices.length === 0) {
-    return res.status(403).json({ error: 'No linked device' });
-  }
+  const userId = req.user.id;
 
-  const deviceId = user.devices[0]; // assuming 1 device per user
+  const device = await Device.findOne({ owner: userId });
+  if (!device) return res.json([]); // No device
 
-  try {
-    const alerts = await Alert.find({ deviceId }).sort({ timestamp: -1 }).limit(10);
-    res.json(alerts);
-  } catch (err) {
-    res.status(500).json({ error: 'Failed to fetch alerts', details: err.message });
-  }
+  const alerts = await Alert.find({ deviceId: device.deviceId }).sort({ timestamp: -1 }).limit(10);
+
+  const response = alerts.map(alert => ({
+    message: alert.message,
+    timestamp: moment(alert.timestamp).tz('Europe/Vilnius').format('YYYY-MM-DD HH:mm:ss')
+  }));
+
+  res.json(response);
 });
 
 

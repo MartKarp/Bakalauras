@@ -1,22 +1,19 @@
 package com.example.myapplication.ui.notifications
 
 import android.content.Context
+import android.media.AudioManager
+import android.media.ToneGenerator
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import com.example.myapplication.R
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import okhttp3.OkHttpClient
-import okhttp3.Request
+import com.google.android.material.snackbar.Snackbar
+import kotlinx.coroutines.*
+import okhttp3.*
 import org.json.JSONArray
 
 class NotificationsFragment : Fragment() {
@@ -25,12 +22,13 @@ class NotificationsFragment : Fragment() {
     private val client = OkHttpClient()
 
     private val alertHandler = Handler(Looper.getMainLooper())
-    private val alertPollInterval = 15000L // 15 seconds
+    private val alertPollInterval = 15000L // kas 15 sekundžių
+
+    private var lastAlertTimestamp: String? = null
 
     private val pollAlerts = object : Runnable {
         override fun run() {
-            val jwt = requireContext()
-                .getSharedPreferences("auth", Context.MODE_PRIVATE)
+            val jwt = requireContext().getSharedPreferences("auth", Context.MODE_PRIVATE)
                 .getString("jwt", null) ?: return
 
             val request = Request.Builder()
@@ -47,22 +45,39 @@ class NotificationsFragment : Fragment() {
                         val alertsArray = JSONArray(responseBody)
 
                         val alerts = mutableListOf<String>()
+                        var showPopup = false
+                        var newestTimestamp: String? = null
+
                         for (i in 0 until alertsArray.length()) {
                             val alert = alertsArray.getJSONObject(i)
                             val msg = alert.getString("message")
                             val time = alert.getString("timestamp")
-                            alerts.add("🔔 $msg\n🕒 $time")
+
+                            if (i == 0) newestTimestamp = time
+                            alerts.add("🚨 $msg\n🕒 Laikas: $time")
                         }
 
                         withContext(Dispatchers.Main) {
-                            val alertsText = alerts.joinToString("\n\n")
-                            view?.findViewById<TextView>(R.id.alertTextView)?.text = alertsText
+                            if (alerts.isNotEmpty()) {
+                                val alertsText = alerts.joinToString("\n\n")
+                                view?.findViewById<TextView>(R.id.alertTextView)?.text = alertsText
+
+                                // Check for new alert since last poll
+                                if (newestTimestamp != null && newestTimestamp != lastAlertTimestamp) {
+                                    lastAlertTimestamp = newestTimestamp
+
+                                    // 🔔 Play tone
+                                    val tone = ToneGenerator(AudioManager.STREAM_NOTIFICATION, 100)
+                                    tone.startTone(ToneGenerator.TONE_PROP_BEEP)
+
+                                    // 💬 Show snackbar
+                                    Snackbar.make(requireView(), "⚠️ Naujas judesio įspėjimas!", Snackbar.LENGTH_LONG).show()
+                                }
+                            }
                         }
-                    } else {
-                        Log.e("Polling", "Response failed: ${response.code}")
                     }
                 } catch (e: Exception) {
-                    Log.e("Polling", "Failed to poll alerts: ${e.message}")
+                    Log.e("Polling", "Nepavyko gauti įspėjimų: ${e.message}")
                 }
             }
 
