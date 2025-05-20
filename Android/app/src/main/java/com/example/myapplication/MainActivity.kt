@@ -3,11 +3,13 @@ package com.example.myapplication
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import android.view.View
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
@@ -45,6 +47,13 @@ class MainActivity : AppCompatActivity() {
             finish()
             return
         }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.POST_NOTIFICATIONS)
+                != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this, arrayOf(android.Manifest.permission.POST_NOTIFICATIONS), 100)
+            }
+        }
+
 
         // 🔁 Check if user has a device
         CoroutineScope(Dispatchers.IO).launch {
@@ -69,7 +78,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
         val intent = Intent(this, AlertPollingService::class.java)
-        ContextCompat.startForegroundService(this, intent)
+        startService(intent)
 
 
 

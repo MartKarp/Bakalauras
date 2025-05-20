@@ -7,6 +7,17 @@
     android:gravity="center_horizontal"
     android:padding="24dp">
 
+    <TextView
+        android:id="@+id/lockStatusText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="🔐 Užrakto būsena: ..."
+        android:textSize="18sp"
+        android:layout_marginBottom="20dp"
+        android:fontFamily="@font/poppins_bold"
+        />
+
+
     <!-- 🌟 Proper Header View -->
        <!-- 🔒 Lock Button -->
     <Button
@@ -31,4 +42,6 @@
         android:textSize="18sp"
         android:textColor="@color/text_light"
         android:background="@drawable/rounded_button" />
+
+    v
 </LinearLayout>
