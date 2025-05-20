@@ -269,7 +269,7 @@ router.get('/alerts', authenticateToken, async (req, res) => {
 
 router.delete('/alerts/:id', authenticateToken, async (req, res) => {
   try {
-    const result = await Alert.findByIdAndDelete(req.params.id);
+const result = await Alert.findOneAndDelete({ _id: req.params.id, owner: req.user.id });
     if (!result) return res.status(404).json({ error: 'Alert not found' });
     res.json({ message: 'Alert deleted' });
   } catch (err) {
