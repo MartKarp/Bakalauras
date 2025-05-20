@@ -224,7 +224,8 @@ router.post('/motion-alert', async (req, res) => {
   }
 
   try {
-    const device = await Device.findOne({ deviceId });
+const device = await Device.findOne({ owner: decoded.id });
+if (device) req.user.deviceId = device.deviceId;
 
     if (!device || !device.claimed || !device.owner) {
       return res.status(404).json({ error: "Device not found or unclaimed" });
