@@ -252,15 +252,19 @@ router.get('/alerts', authenticateToken, async (req, res) => {
   const device = await Device.findOne({ owner: userId });
   if (!device) return res.json([]);
 
-  const alerts = await Alert.find({ deviceId: device.deviceId }).sort({ timestamp: -1 }).limit(10);
+  const alerts = await Alert.find({ deviceId: device.deviceId })
+    .sort({ timestamp: -1 })
+    .limit(10);
 
   const response = alerts.map(alert => ({
+    _id: alert._id,
     message: alert.message,
     timestamp: moment(alert.timestamp).tz('Europe/Vilnius').format('YYYY-MM-DD HH:mm:ss')
   }));
 
   res.json(response);
 });
+
 
 router.delete('/alerts/:id', authenticateToken, async (req, res) => {
   try {
