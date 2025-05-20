@@ -1,9 +1,11 @@
 const express = require('express');
 const router = express.Router();
-const Location = require('../models/Location'); // adjust path if needed
-const Lock = require('../models/Lock'); // adjust path as needed
+const Location = require('../models/Location'); 
+const Lock = require('../models/Lock'); 
 const Device = require('../models/Device');
 const User = require('../models/User');
+const Alert = require('../models/Alert');
+
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 
@@ -211,6 +213,55 @@ router.post('/device_register', async (req, res) => {
     res.status(500).json({ error: "Database error", details: err.message });
   }
 });
+
+// POST /api/motion-alert
+router.post('/motion-alert', async (req, res) => {
+  const { deviceId, message } = req.body;
+
+  if (!deviceId || !message) {
+    return res.status(400).json({ error: "Missing deviceId or message" });
+  }
+
+  try {
+    const device = await Device.findOne({ deviceId });
+
+    if (!device || !device.claimed || !device.owner) {
+      return res.status(404).json({ error: "Device not found or unclaimed" });
+    }
+
+    console.log(`Alert from device ${deviceId}: ${message}`);
+
+    await Alert.create({
+      deviceId,
+      owner: device.owner,
+      message,
+      timestamp: new Date()
+    });
+
+    res.status(200).json({ success: true, received: true });
+  } catch (err) {
+    console.error("Error handling motion alert:", err);
+    res.status(500).json({ error: "Server error", details: err.message });
+  }
+});
+
+router.get('/alerts', authenticateToken, async (req, res) => {
+  const user = await User.findById(req.user.id);
+  if (!user || !user.devices || user.devices.length === 0) {
+    return res.status(403).json({ error: 'No linked device' });
+  }
+
+  const deviceId = user.devices[0]; // assuming 1 device per user
+
+  try {
+    const alerts = await Alert.find({ deviceId }).sort({ timestamp: -1 }).limit(10);
+    res.json(alerts);
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch alerts', details: err.message });
+  }
+});
+
+
 
 
 
