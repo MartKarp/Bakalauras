@@ -250,7 +250,7 @@ router.get('/alerts', authenticateToken, async (req, res) => {
   const userId = req.user.id;
 
   const device = await Device.findOne({ owner: userId });
-  if (!device) return res.json([]); // No device
+  if (!device) return res.json([]);
 
   const alerts = await Alert.find({ deviceId: device.deviceId }).sort({ timestamp: -1 }).limit(10);
 
@@ -261,6 +261,17 @@ router.get('/alerts', authenticateToken, async (req, res) => {
 
   res.json(response);
 });
+
+router.delete('/alerts/:id', authenticateToken, async (req, res) => {
+  try {
+    const result = await Alert.findOneAndDelete({ _id: req.params.id, deviceId: req.user.deviceId });
+    if (!result) return res.status(404).json({ error: 'Alert not found' });
+    res.json({ message: 'Alert deleted' });
+  } catch (err) {
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
 
 
 
