@@ -224,8 +224,37 @@ router.post('/motion-alert', async (req, res) => {
   }
 
   try {
-const device = await Device.findOne({ owner: decoded.id });
+// POST /api/motion-alert
+router.post('/motion-alert', async (req, res) => {
+  const { deviceId, message } = req.body;
+
+  if (!deviceId || !message) {
+    return res.status(400).json({ error: "Missing deviceId or message" });
+  }
+
+  try {
+const device = await Device.findOne({ deviceId });
 if (device) req.user.deviceId = device.deviceId;
+
+    if (!device || !device.claimed || !device.owner) {
+      return res.status(404).json({ error: "Device not found or unclaimed" });
+    }
+
+    console.log(`Alert from device ${deviceId}: ${message}`);
+
+    await Alert.create({
+      deviceId,
+      owner: device.owner,
+      message,
+      timestamp: new Date()
+    });
+
+    res.status(200).json({ success: true, received: true });
+  } catch (err) {
+    console.error("Error handling motion alert:", err);
+    res.status(500).json({ error: "Server error", details: err.message });
+  }
+});if (device) req.user.deviceId = device.deviceId;
 
     if (!device || !device.claimed || !device.owner) {
       return res.status(404).json({ error: "Device not found or unclaimed" });
