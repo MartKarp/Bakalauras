@@ -58,7 +58,6 @@ router.get('/location', async (req, res) => {
   }
 });
 
-// GET current lock state
 router.get('/lock', async (req, res) => {
   try {
     let doc = await Lock.findById('current');
@@ -71,19 +70,16 @@ router.get('/lock', async (req, res) => {
   }
 });
 
-// POST to lock
 router.post('/lock', async (req, res) => {
   await Lock.findByIdAndUpdate('current', { state: 'locked', updatedAt: new Date() }, { upsert: true });
   res.json({ status: 'locked' });
 });
 
-// POST to unlock
 router.post('/unlock', async (req, res) => {
   await Lock.findByIdAndUpdate('current', { state: 'unlocked', updatedAt: new Date() }, { upsert: true });
   res.json({ status: 'unlocked' });
 });
 
-// Claim a device
 router.post('/claim', authenticateToken, async (req, res) => {
   const { claimCode } = req.body;
 
@@ -165,7 +161,7 @@ router.post('/unclaim', authenticateToken, async (req, res) => {
       return res.status(400).json({ error: 'No device to unclaim' });
     }
 
-    const deviceId = user.devices[0]; // assume 1 device for now
+    const deviceId = user.devices[0];
     const device = await Device.findOne({ deviceId });
 
     if (!device) {
@@ -193,7 +189,7 @@ router.post('/device_register', async (req, res) => {
     return res.status(400).json({ error: "Missing required fields" });
   }
 
-  // Optional: Check if device already exists
+ 
   const existing = await Device.findOne({ deviceId });
   if (existing) {
     return res.status(409).json({ error: "Device already exists" });
@@ -215,7 +211,6 @@ router.post('/device_register', async (req, res) => {
   }
 });
 
-// POST /api/motion-alert
 router.post('/motion-alert', async (req, res) => {
   const { deviceId, message } = req.body;
 
@@ -224,7 +219,7 @@ router.post('/motion-alert', async (req, res) => {
   }
 
   try {
-    const device = await Device.findOne({ deviceId }); // ✅ This must be here
+    const device = await Device.findOne({ deviceId });
 
     if (!device || !device.claimed || !device.owner) {
       return res.status(404).json({ error: "Device not found or unclaimed" });
