@@ -88,7 +88,7 @@ class MainActivity : AppCompatActivity() {
                 R.id.navigation_dashboard,
                 R.id.navigation_notifications,
                 R.id.navigation_claim,
-                R.id.navigation_profile // 🔧 make sure this ID exists in nav_graph
+                R.id.navigation_profile
             )
         )
 
@@ -110,8 +110,6 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-
-    // 📍 Call this from other fragments to show badge
     fun showAlertBadge() {
         val badge = navView.getOrCreateBadge(R.id.navigation_notifications)
         badge.isVisible = true

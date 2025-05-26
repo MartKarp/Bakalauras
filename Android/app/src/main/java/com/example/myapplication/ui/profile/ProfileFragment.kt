@@ -32,11 +32,11 @@ class ProfileFragment : Fragment() {
         val sharedPrefs = requireContext().getSharedPreferences("auth", Context.MODE_PRIVATE)
         val token = sharedPrefs.getString("jwt", null)
 
-        // 🧠 Default placeholders
+
         emailText.text = "📧 El. paštas: ..."
         deviceText.text = "🔗 Įrenginys: ..."
 
-        // 🔁 Fetch from /api/me
+
         if (!token.isNullOrEmpty()) {
             val request = Request.Builder()
                 .url("$serverUrl/api/me")
@@ -66,7 +66,6 @@ class ProfileFragment : Fragment() {
             }
         }
 
-        // 🔌 Logout
         logoutButton.setOnClickListener {
             sharedPrefs.edit().remove("jwt").apply()
             val intent = Intent(requireContext(), LoginActivity::class.java)

@@ -38,7 +38,6 @@ class AddDeviceFragment : Fragment() {
             return view
         }
 
-        // 🔎 Check if device already claimed
         CoroutineScope(Dispatchers.IO).launch {
             try {
                 val meRequest = Request.Builder()
@@ -71,7 +70,7 @@ class AddDeviceFragment : Fragment() {
             }
         }
 
-        // ✅ Claim device
+
         claimButton.setOnClickListener {
             val code = claimInput.text.toString().trim()
             if (code.isEmpty()) {
@@ -101,7 +100,7 @@ class AddDeviceFragment : Fragment() {
             }
         }
 
-        // ❌ Unclaim device
+
         unclaimButton.setOnClickListener {
             val request = Request.Builder()
                 .url("$serverUrl/api/unclaim")

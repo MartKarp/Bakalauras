@@ -51,7 +51,7 @@ class LoginActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
-            // 📦 Create JSON request
+
             val json = JSONObject().apply {
                 put("email", emailText)
                 put("password", passwordText)
@@ -85,7 +85,7 @@ class LoginActivity : AppCompatActivity() {
 
                         val token = json.getString("token")
 
-                        // Save JWT token
+
                         getSharedPreferences("auth", MODE_PRIVATE).edit().putString("jwt", token).apply()
 
                         // 🔍 Check if the user has claimed a device
@@ -132,7 +132,7 @@ class LoginActivity : AppCompatActivity() {
 
         }
 
-        // 🔁 Go to register activity
+
         goToRegister.setOnClickListener {
             startActivity(Intent(this, RegisterActivity::class.java))
         }

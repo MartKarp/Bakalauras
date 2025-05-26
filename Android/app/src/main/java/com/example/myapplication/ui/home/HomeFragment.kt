@@ -51,7 +51,7 @@ class HomeFragment : Fragment() {
             fetchAndUpdateLocation()
             handler.postDelayed(fetchLocationRunnable, refreshInterval)
 
-            // Add Zoom Button Actions
+
             val zoomIn = view.findViewById<Button>(R.id.zoomInButton)
             val zoomOut = view.findViewById<Button>(R.id.zoomOutButton)
 
@@ -90,7 +90,7 @@ class HomeFragment : Fragment() {
                     }
                 }
             } catch (e: Exception) {
-                // Log or handle error
+
             }
         }
     }
